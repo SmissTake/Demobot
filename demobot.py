@@ -4,8 +4,8 @@ import requests
 import json
 import csv
 
-import textwrap
-
+from dotenv import dotenv_values
+config = dotenv_values(".env")
 
 def wrap_text(text, width):
     words = text.split()
@@ -52,8 +52,10 @@ def generate_text_image(text):
     return image
 
 def search_image(query):
-    # définir l'URL de l'API Google Images
-    url = "https://www.googleapis.com/customsearch/v1?q={}&cx=017576662512468239146:omuauf_lfve&imgSize=huge&imgType=news&num=1&searchType=image&key=YOUR_API_KEY".format(query)
+    # définir l'URL de l'API Unsplash
+    #url = "https://api.unsplash.com/search/photos?query={}&client_id={}".format(query, os.getenv("CLIENT_ID"))
+    # définir l'URL de l'API Unsplash avec le dotenv
+    url = "https://api.unsplash.com/search/photos?query={}&client_id={}".format(query, config["CLIENT_ID"])
 
     # faire une requête à l'API
     response = requests.get(url)
@@ -63,14 +65,14 @@ def search_image(query):
         data = json.loads(response.content.decode('utf-8'))
 
         # obtenir le lien de l'image trouvée
-        image_url = data['items'][0]['link']
+        image_url = data["results"][0]["urls"]["regular"]
 
         # télécharger l'image
         image = requests.get(image_url).content
 
         return image
     else:
-        print("Erreur lors de la requête à l'API Google Images")
+        print("Erreur lors de la requête à l'API Unsplash")
         return None
     
 def save_image(image, filename):
@@ -92,9 +94,9 @@ for i, phrase in enumerate(phrases):
     text_image = generate_text_image(phrase)
 
     # trouver une image correspondant au thème de la phrase
-    #theme = phrase.split(" ")[-1]
-    #theme_image = search_image(theme)
+    theme = phrase.split(" ")[-1]
+    theme_image = search_image(theme)
 
     # enregistrer l'image sur le disque dur
     save_image(text_image, "img/text_image_{}.jpeg".format(i))
-    #save_image(theme_image, "theme_image_{}.jpeg".format(i))
+    save_image(theme_image, "themes/theme_image_{}.jpeg".format(i))
