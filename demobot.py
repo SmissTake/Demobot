@@ -47,10 +47,32 @@ def generate_text_image(text, themebg):
     text_x = (width - text_width) / 2
     text_y = (height - text_height) / 2
 
-    # ajouter l'image de fond
-    background = Image.open("themes/"+themebg)
-    background = background.resize((width, height))
-    image.paste(background, (0, 0))
+    # Charger l'image de fond
+    theme_image = Image.open("themes/{}".format(themebg))
+
+    # Redimensionner l'image pour remplir complètement le cadre
+    theme_ratio = theme_image.width / theme_image.height
+    image_ratio = width / height
+
+    if theme_ratio > image_ratio:
+        new_width = int(height * theme_ratio)
+        theme_image = theme_image.resize((new_width, height), Image.ANTIALIAS)
+        left = (new_width - width) / 2
+        right = new_width - left
+        top = 0
+        bottom = height
+        theme_image = theme_image.crop((left, top, right, bottom))
+    else:
+        new_height = int(width / theme_ratio)
+        theme_image = theme_image.resize((width, new_height), Image.ANTIALIAS)
+        top = (new_height - height) / 2
+        bottom = new_height - top
+        left = 0
+        right = width
+        theme_image = theme_image.crop((left, top, right, bottom))
+
+    # Coller l'image de fond sur l'image principale
+    image.paste(theme_image, (0, 0))
 
     # écrire le texte sur l'image
     draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
