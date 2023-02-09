@@ -74,6 +74,11 @@ def generate_text_image(text, themebg):
     # Coller l'image de fond sur l'image principale
     image.paste(theme_image, (0, 0))
 
+    position = (text_x, text_y)
+    bbox = draw.textbbox(position, text, font=font)
+    draw.rectangle(bbox, fill="red")
+    draw.text(position, text, font=font, fill="black")
+
     # écrire le texte sur l'image
     draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
 
