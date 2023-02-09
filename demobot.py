@@ -29,7 +29,7 @@ def read_phrases_from_file(filename):
             phrases.append(row[0])
     return phrases
 
-def generate_text_image(text):
+def generate_text_image(text, themebg):
     # définir la taille de l'image
     width, height = 512, 512
 
@@ -46,6 +46,11 @@ def generate_text_image(text):
     text_width, text_height = draw.textsize(text, font)
     text_x = (width - text_width) / 2
     text_y = (height - text_height) / 2
+
+    # ajouter l'image de fond
+    background = Image.open("themes/"+themebg)
+    background = background.resize((width, height))
+    image.paste(background, (0, 0))
 
     # écrire le texte sur l'image
     draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
@@ -97,14 +102,14 @@ phrases = read_phrases_from_file("phrases_test.csv")
 for i, phrase in enumerate(phrases):
     # générer une image avec le texte
 
-    phrase = wrap_text(phrase, 20) # ceci retourne une liste de lignes
-    phrase = "\n".join(phrase) # ceci transforme la liste en une chaîne de caractères
-    text_image = generate_text_image(phrase)
-
     # trouver une image correspondant au thème de la phrase
     theme = "apple"
     theme_image = search_image(theme)
+    save_image(theme_image, "themes/theme_image_{}.jpeg".format(i))
+
+    phrase = wrap_text(phrase, 20) # ceci retourne une liste de lignes
+    phrase = "\n".join(phrase) # ceci transforme la liste en une chaîne de caractères
+    text_image = generate_text_image(phrase, "theme_image_0.jpeg")
 
     # enregistrer l'image sur le disque dur
     save_image(text_image, "img/text_image_{}.jpeg".format(i))
-    save_image(theme_image, "themes/theme_image_{}.jpeg".format(i))
