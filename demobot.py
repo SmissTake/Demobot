@@ -3,6 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 import requests
 import json
 import csv
+import io
 
 from dotenv import dotenv_values
 config = dotenv_values(".env")
@@ -70,6 +71,9 @@ def search_image(query):
         # télécharger l'image
         image = requests.get(image_url).content
 
+        # mettre l'image dans un objet Image
+        image = Image.open(io.BytesIO(image))
+
         return image
     else:
         print("Erreur lors de la requête à l'API Unsplash")
@@ -84,6 +88,8 @@ def save_image(image, filename):
 import os
 for filename in os.listdir("img"):
     os.remove("img/" + filename)
+for filename in os.listdir("themes"):
+    os.remove("themes/" + filename)
 
 phrases = read_phrases_from_file("phrases_test.csv")
 for i, phrase in enumerate(phrases):
@@ -94,7 +100,7 @@ for i, phrase in enumerate(phrases):
     text_image = generate_text_image(phrase)
 
     # trouver une image correspondant au thème de la phrase
-    theme = phrase.split(" ")[-1]
+    theme = "apple"
     theme_image = search_image(theme)
 
     # enregistrer l'image sur le disque dur
