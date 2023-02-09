@@ -1,4 +1,5 @@
 img/*.jpeg
+themes/*.jpeg
 fonts/*.ttf
 *.csv
 .env

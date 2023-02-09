@@ -84,12 +84,14 @@ def save_image(image, filename):
 
 
 # for dev purposes
-# del all images in folder img/
+# del all images in folder img/ and themes/ except .gitkeep
 import os
 for filename in os.listdir("img"):
-    os.remove("img/" + filename)
+    if filename != ".gitkeep":
+        os.remove(os.path.join("img", filename))
 for filename in os.listdir("themes"):
-    os.remove("themes/" + filename)
+    if filename != ".gitkeep":
+        os.remove(os.path.join("themes", filename))
 
 phrases = read_phrases_from_file("phrases_test.csv")
 for i, phrase in enumerate(phrases):
