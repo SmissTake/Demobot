@@ -30,6 +30,14 @@ def read_phrases_from_file(filename):
             phrases.append(row[0])
     return phrases
 
+def get_theme_for_phrase(phrase, filename):
+    with open(filename, "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == phrase:
+                return row[1]
+    return ""
+
 def get_image_color(image_path):
     # Ouvrir l'image en utilisant Pillow
     image = Image.open(image_path)
@@ -174,7 +182,7 @@ for i, phrase in enumerate(phrases):
     # générer une image avec le texte
 
     # trouver une image correspondant au thème de la phrase
-    theme = "tree"
+    theme = get_theme_for_phrase(phrase, "phrases_test.csv")
     theme_image = search_image(theme)
     save_image(theme_image, "themes/theme_image_{}.jpeg".format(i))
 
