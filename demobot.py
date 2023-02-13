@@ -137,8 +137,6 @@ def generate_text_image(text, themebg):
     return image
 
 def search_image(query):
-    # définir l'URL de l'API Unsplash
-    #url = "https://api.unsplash.com/search/photos?query={}&client_id={}".format(query, os.getenv("CLIENT_ID"))
     # définir l'URL de l'API Unsplash avec le dotenv
     url = "https://api.unsplash.com/search/photos?query={}&client_id={}".format(query, config["CLIENT_ID"])
 
@@ -177,12 +175,13 @@ for filename in os.listdir("themes"):
     if filename != ".gitkeep":
         os.remove(os.path.join("themes", filename))
 
-phrases = read_phrases_from_file("phrases_test.csv")
+file = "phrases_test.csv"
+phrases = read_phrases_from_file(file)
 for i, phrase in enumerate(phrases):
     # générer une image avec le texte
 
     # trouver une image correspondant au thème de la phrase
-    theme = get_theme_for_phrase(phrase, "phrases_test.csv")
+    theme = get_theme_for_phrase(phrase, file)
     theme_image = search_image(theme)
     save_image(theme_image, "themes/theme_image_{}.jpeg".format(i))
 
