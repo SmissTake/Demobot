@@ -29,6 +29,38 @@ def read_phrases_from_file(filename):
             phrases.append(row[0])
     return phrases
 
+def get_image_color(image_path):
+    # Ouvrir l'image en utilisant Pillow
+    image = Image.open(image_path)
+
+    # Convertir l'image en tableau de pixels
+    pixels = image.convert("RGB").getdata()
+
+    # Initialiser des compteurs pour les couleurs R, G et B
+    r = 0
+    g = 0
+    b = 0
+
+    # Pour chaque pixel dans l'image, additionner les valeurs R, G et B
+    for pixel in pixels:
+        r += pixel[0]
+        g += pixel[1]
+        b += pixel[2]
+
+    # Diviser les totaux pour les couleurs par le nombre de pixels pour obtenir la couleur moyenne
+    average_color = (r / len(pixels), g / len(pixels), b / len(pixels))
+
+    # transforme la couleur moyenne compatible avec la fonction fill de Pillow
+    average_color = tuple(int(x) for x in average_color)
+
+    return average_color
+
+def get_complement_color(color):
+    # obtenir la couleur complémentaire
+    complement_color = (255 - color[0], 255 - color[1], 255 - color[2])
+
+    return complement_color
+
 def generate_text_image(text, themebg):
     # définir la taille de l'image
     width, height = 512, 512
@@ -49,6 +81,12 @@ def generate_text_image(text, themebg):
 
     # Charger l'image de fond
     theme_image = Image.open("themes/{}".format(themebg))
+
+    # obtenir la couleur moyenne de l'image de fond
+    average_color = get_image_color(theme_image.filename)
+
+    # obtenir la couleur complémentaire de la couleur moyenne
+    text_color = get_complement_color(average_color)
 
     # Redimensionner l'image pour remplir complètement le cadre
     theme_ratio = theme_image.width / theme_image.height
@@ -75,12 +113,11 @@ def generate_text_image(text, themebg):
     image.paste(theme_image, (0, 0))
 
     position = (text_x, text_y)
-    bbox = draw.textbbox(position, text, font=font)
-    draw.rectangle(bbox, fill="red")
-    draw.text(position, text, font=font, fill="black")
 
+    # dessiner un rectangle autour du texte avec une marge de 10 pixels et la couleur moyenne opacifiée
+    draw.rectangle((text_x - 10, text_y - 10, text_x + text_width + 10, text_y + text_height + 10), fill=average_color)
     # écrire le texte sur l'image
-    draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
+    draw.text((text_x, text_y), text, font=font, fill=text_color)
 
     return image
 
@@ -130,13 +167,13 @@ for i, phrase in enumerate(phrases):
     # générer une image avec le texte
 
     # trouver une image correspondant au thème de la phrase
-    theme = "apple"
+    theme = "tree"
     theme_image = search_image(theme)
     save_image(theme_image, "themes/theme_image_{}.jpeg".format(i))
 
     phrase = wrap_text(phrase, 20) # ceci retourne une liste de lignes
     phrase = "\n".join(phrase) # ceci transforme la liste en une chaîne de caractères
-    text_image = generate_text_image(phrase, "theme_image_0.jpeg")
+    text_image = generate_text_image(phrase, "theme_image_{}.jpeg".format(i))
 
     # enregistrer l'image sur le disque dur
     save_image(text_image, "img/text_image_{}.jpeg".format(i))
