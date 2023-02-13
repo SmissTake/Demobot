@@ -1,3 +1,4 @@
+import random
 from PIL import Image, ImageDraw, ImageFont
 
 import requests
@@ -55,6 +56,12 @@ def get_image_color(image_path):
 
     return average_color
 
+# retourne une police aléatoire du dossier fonts
+def get_random_font():
+    fonts = os.listdir("fonts")
+    random_font = random.choice(fonts)
+    return random_font
+
 def get_complement_color(color):
     # obtenir la couleur complémentaire
     complement_color = (255 - color[0], 255 - color[1], 255 - color[2])
@@ -69,7 +76,7 @@ def generate_text_image(text, themebg):
     image = Image.new("RGB", (width, height), (255, 255, 255))
 
     # définir la police et la taille du texte
-    font = ImageFont.truetype("fonts/Original-Bold.ttf", 36)
+    font = ImageFont.truetype("fonts/{}".format(get_random_font()), 36)
 
     # créer un objet dessin pour écrire sur l'image
     draw = ImageDraw.Draw(image)
